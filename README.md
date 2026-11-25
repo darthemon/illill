@@ -2,7 +2,7 @@
 
 일일체크 화면에서 날짜 이동, 자동 체크, 체크 취소, 그리고 여러 날짜에 대한 기간 일괄 처리를 간편하게 도와주는 크로미움 기반 브라우저 확장 프로그램입니다.
 
-- **현재 버전**: `3.1.1`
+- **현재 버전**: `3.1.2`
 - **지원 브라우저**: Chrome, Whale, Edge
 
 ---
@@ -11,11 +11,14 @@
 
 이 확장 프로그램은 스토어를 거치지 않고 ZIP 압축을 푼 뒤 브라우저의 **개발자 모드**에서 직접 불러와 설치합니다.
 
-### 1단계: 압축 풀기
+### 1단계: ZIP 다운로드 및 압축 풀기
 
-1. 먼저 `.zip` 파일을 다운로드해주세요.
+1. 아래 두 가지 방법 중 편한 방법으로 `.zip` 파일을 다운로드해주세요.
+   - **방법 A (권장 — Releases에서 다운로드)**: [최신 릴리즈 페이지](https://github.com/darthemon/illillCheck/releases/latest)에서 **Assets** 목록의 `illill-v3.1.2.zip`(최신 버전)을 클릭해 다운로드합니다.
+   - **방법 B (저장소 화면에서 바로 다운로드)**: GitHub 저장소 우측 상단의 초록색 **`<> Code`** 버튼을 클릭한 뒤 **`Download ZIP`** 을 눌러 다운로드합니다.
 2. 안전한 디렉토리에서 파일의 압축을 풀고 저장해주세요.
 3. 압축을 푼 디렉토리를 열었을 때 `manifest.json` 파일이 **바로 보이는지** 확인하세요.
+   - 특히 **`<> Code` → `Download ZIP`** 으로 받은 경우 압축 안에 `illillCheck-main` 폴더가 한 겹 들어 있으므로, 압축을 푼 뒤 `manifest.json`이 바로 보이는 안쪽 디렉토리를 선택하세요.
    - 만약 디렉토리 안에 같은 이름의 디렉토리가 하나 더 들어 있다면, `manifest.json`이 들어있는 디렉토리의 상위 디렉토리를 선택하세요.
 
 > [진짜루중요함!]
@@ -144,4 +147,13 @@ Git이 설치되어 있다면 아래 명령으로도 `.git` 및 `.gitattributes`
 
 ```bash
 git archive --format=zip --output=illill.zip HEAD
+```
+
+### 방법 3: GitHub Releases 자동 배포 (태그 푸시)
+
+저장소에 `v*` 형식의 태그를 푸시하면 `.github/workflows/release.yml` 워크플로우가 자동으로 실행되어 `illill-v<버전>.zip` 파일을 만들고 GitHub Releases 페이지에 업로드합니다.
+
+```bash
+git tag v3.1.2
+git push origin v3.1.2
 ```

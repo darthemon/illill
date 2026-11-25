@@ -1,0 +1,45 @@
+name: Release ZIP
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build release ZIP
+        id: build
+        run: |
+          VERSION=$(jq -r '.version' manifest.json)
+          ZIP_NAME="illill-v${VERSION}.zip"
+          git archive --format=zip --output="$ZIP_NAME" HEAD
+          unzip -l "$ZIP_NAME"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "zip_name=$ZIP_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            TAG="${GITHUB_REF_NAME}"
+          else
+            TAG="v${{ steps.build.outputs.version }}"
+          fi
+          ZIP_NAME="${{ steps.build.outputs.zip_name }}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$ZIP_NAME" --clobber
+          else
+            gh release create "$TAG" "$ZIP_NAME" \
+              --title "illill ${TAG}" \
+              --generate-notes
+          fi

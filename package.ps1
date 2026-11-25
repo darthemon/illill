@@ -42,7 +42,9 @@ foreach ($file in $allFiles) {
     $relPath = $file.FullName.Substring($rootPrefix.Length)
 
     if ($relPath.StartsWith(".git\", [System.StringComparison]::OrdinalIgnoreCase) -or
-        $relPath.StartsWith(".git/", [System.StringComparison]::OrdinalIgnoreCase)) {
+        $relPath.StartsWith(".git/", [System.StringComparison]::OrdinalIgnoreCase) -or
+        $relPath.StartsWith(".github\", [System.StringComparison]::OrdinalIgnoreCase) -or
+        $relPath.StartsWith(".github/", [System.StringComparison]::OrdinalIgnoreCase)) {
         continue
     }
 

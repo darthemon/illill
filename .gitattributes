@@ -1,0 +1,3 @@
+.gitignore export-ignore
+.gitattributes export-ignore
+package.ps1 export-ignore

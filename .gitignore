@@ -1,0 +1,8 @@
+# OS temporary / metadata files
+.DS_Store
+._*
+Thumbs.db
+desktop.ini
+
+# Build / distribution archives
+*.zip

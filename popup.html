@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>illillCheck</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- Top Bar -->
+    <header class="topbar">
+      <h1 class="app-title">일일체크</h1>
+      <div class="topbar-right">
+        <span id="conn-badge" class="conn-pill status-checking">
+          <span class="dot"></span>
+          <span id="conn-text">확인 중</span>
+        </span>
+        <button
+          id="refresh-btn"
+          class="icon-btn"
+          type="button"
+          title="새로고침"
+          aria-label="새로고침"
+        >
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 8a5.5 5.5 0 1 1-1.35-3.6M13.5 2.5v2.75h-2.75" />
+          </svg>
+        </button>
+        <button
+          id="btn-settings-toggle"
+          class="icon-btn"
+          type="button"
+          title="설정"
+          aria-label="설정"
+          aria-pressed="false"
+        >
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <circle cx="8" cy="8" r="2.1" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.1 9.6a1.1 1.1 0 0 0 .22 1.21l.04.04a1.33 1.33 0 1 1-1.88 1.88l-.04-.04a1.1 1.1 0 0 0-1.21-.22 1.1 1.1 0 0 0-.67 1.01v.11a1.33 1.33 0 0 1-2.66 0v-.06a1.1 1.1 0 0 0-.72-1.01 1.1 1.1 0 0 0-1.21.22l-.04.04a1.33 1.33 0 1 1-1.88-1.88l.04-.04a1.1 1.1 0 0 0 .22-1.21 1.1 1.1 0 0 0-1.01-.67h-.11a1.33 1.33 0 0 1 0-2.66h.06a1.1 1.1 0 0 0 1.01-.72 1.1 1.1 0 0 0-.22-1.21l-.04-.04a1.33 1.33 0 1 1 1.88-1.88l.04.04a1.1 1.1 0 0 0 1.21.22h.05a1.1 1.1 0 0 0 .67-1.01v-.11a1.33 1.33 0 0 1 2.66 0v.06a1.1 1.1 0 0 0 .67 1.01 1.1 1.1 0 0 0 1.21-.22l.04-.04a1.33 1.33 0 1 1 1.88 1.88l-.04.04a1.1 1.1 0 0 0-.22 1.21v.05a1.1 1.1 0 0 0 1.01.67h.11a1.33 1.33 0 0 1 0 2.66h-.06a1.1 1.1 0 0 0-1.01.67Z" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Disconnected Banner -->
+    <div id="not-connected-banner" class="notice-banner hidden" role="status">
+      <svg class="notice-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <circle cx="8" cy="8" r="6.25" />
+        <path stroke-linecap="round" d="M8 5.1v3.35M8 10.85h.01" />
+      </svg>
+      <div class="notice-body">
+        <div class="notice-title-row">
+          <strong>일일체크 화면이 열려 있지 않아요</strong>
+          <button id="banner-refresh-btn" class="notice-action" type="button">다시 확인</button>
+        </div>
+        <p>통합정보시스템에서 일일체크 탭을 연 뒤 새로고침하세요</p>
+      </div>
+    </div>
+
+    <!-- Main Workspace -->
+    <main id="workspace-view" class="workspace">
+      <!-- 2-Way Segmented Mode Switcher -->
+      <div class="mode-switch" role="tablist" aria-label="작업 모드">
+        <button id="tab-single" class="mode-tab active" type="button" role="tab" aria-selected="true">날짜 선택</button>
+        <button id="tab-range" class="mode-tab" type="button" role="tab" aria-selected="false">기간 지정</button>
+      </div>
+
+      <!-- Interactive Mini Calendar Card -->
+      <section class="card calendar-card" aria-label="날짜 선택 달력">
+        <div class="cal-header">
+          <div class="cal-nav">
+            <button id="cal-prev-month" class="cal-nav-btn" type="button" title="이전 달" aria-label="이전 달">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.75 5.5 8l4.25 4.25" />
+              </svg>
+            </button>
+            <span id="cal-month-label" class="cal-month-label tabular"></span>
+            <button id="cal-next-month" class="cal-nav-btn" type="button" title="다음 달" aria-label="다음 달">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.25 3.75 10.5 8l-4.25 4.25" />
+              </svg>
+            </button>
+          </div>
+          <div class="cal-header-right">
+            <span id="cal-month-checked" class="cal-checked-hint hidden"></span>
+            <button id="btn-today" class="today-pill" type="button">오늘</button>
+          </div>
+        </div>
+
+        <div class="cal-weekdays" aria-hidden="true">
+          <span class="sun">일</span>
+          <span>월</span>
+          <span>화</span>
+          <span>수</span>
+          <span>목</span>
+          <span>금</span>
+          <span class="sat">토</span>
+        </div>
+
+        <div id="cal-grid" class="cal-grid" role="grid"></div>
+      </section>
+
+      <!-- Panel 1: Single Action Card -->
+      <section id="panel-single" class="card action-card" role="tabpanel" aria-labelledby="tab-single">
+        <div class="selected-bar">
+          <div class="selected-nav">
+            <button id="btn-prev" class="mini-step-btn" type="button" title="하루 전" aria-label="하루 전">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.5 4 5.5 8l4 4" />
+              </svg>
+            </button>
+            <div class="selected-date-wrap">
+              <strong id="single-date-display" class="selected-date tabular">-</strong>
+              <span id="single-today-chip" class="today-chip hidden">오늘</span>
+            </div>
+            <button id="btn-next" class="mini-step-btn" type="button" title="하루 뒤" aria-label="하루 뒤">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.5 4 10.5 8l-4 4" />
+              </svg>
+            </button>
+          </div>
+          <span id="portal-status" class="state-badge">미확인</span>
+        </div>
+
+        <button id="btn-check" class="btn btn-primary" type="button">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.5 8.5 6.5 11.5 12.5 4.75" />
+          </svg>
+          <span class="btn-label">일일체크</span>
+        </button>
+
+        <div class="actions-row">
+          <button id="btn-move" class="btn btn-secondary" type="button">날짜 이동</button>
+          <button id="btn-cancel" class="btn btn-danger" type="button">체크 취소</button>
+        </div>
+      </section>
+
+      <!-- Panel 2: Range Action Card -->
+      <section id="panel-range" class="card action-card hidden" role="tabpanel" aria-labelledby="tab-range">
+        <div class="preset-row" aria-label="빠른 기간 선택">
+          <button id="preset-3d" class="preset-btn" type="button">최근 3일</button>
+          <button id="preset-7d" class="preset-btn" type="button">최근 7일</button>
+          <button id="preset-week" class="preset-btn" type="button">이번 주</button>
+          <button id="preset-month" class="preset-btn" type="button">이번 달</button>
+        </div>
+
+        <div class="range-info-row">
+          <div class="range-dates-wrap">
+            <strong id="range-dates-display" class="range-dates tabular">-</strong>
+            <span id="range-hint" class="range-hint">시작일과 종료일을 선택하세요</span>
+          </div>
+          <span id="range-days-badge" class="days-badge tabular">1일</span>
+        </div>
+
+        <div id="progress-wrap" class="progress-wrap hidden">
+          <div class="progress-top">
+            <span id="progress-label">진행 중...</span>
+            <span id="progress-pct" class="tabular">0%</span>
+          </div>
+          <div class="progress-track">
+            <div id="progress-bar" class="progress-bar"></div>
+          </div>
+        </div>
+
+        <div class="actions-row">
+          <button id="btn-range-check" class="btn btn-primary" type="button">
+            <span id="btn-range-check-label">일괄 체크</span>
+          </button>
+          <button id="btn-range-cancel" class="btn btn-danger" type="button">일괄 취소</button>
+        </div>
+
+        <button id="btn-stop" class="btn btn-stop hidden" type="button">작업 중지</button>
+      </section>
+    </main>
+
+    <!-- Settings View -->
+    <section id="panel-settings" class="card settings-card hidden" aria-label="설정">
+      <div class="settings-header">
+        <h2>설정</h2>
+        <button id="btn-settings-back" class="back-btn" type="button">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.75 5.5 8l4.25 4.25" />
+          </svg>
+          <span>돌아가기</span>
+        </button>
+      </div>
+
+      <div class="settings-block">
+        <div class="settings-block-head">
+          <span class="settings-label">요청 간 대기 시간</span>
+          <p class="settings-desc">서버 응답이 느리거나 누락되면 여유 있게 설정하세요.</p>
+        </div>
+        <div class="speed-grid" role="group" aria-label="요청 간 대기 시간">
+          <button class="speed-btn" type="button" data-delay="900">
+            <strong class="tabular">0.9초</strong>
+            <span>빠름</span>
+          </button>
+          <button class="speed-btn is-selected" type="button" data-delay="1200">
+            <strong class="tabular">1.2초</strong>
+            <span>권장</span>
+          </button>
+          <button class="speed-btn" type="button" data-delay="1600">
+            <strong class="tabular">1.6초</strong>
+            <span>안정</span>
+          </button>
+          <button class="speed-btn" type="button" data-delay="2200">
+            <strong class="tabular">2.2초</strong>
+            <span>느림</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="settings-block">
+        <span class="settings-label">포털 연동 정보</span>
+        <div class="kv-list">
+          <div class="kv-row">
+            <span class="kv-key">현재 포털 날짜</span>
+            <strong id="portal-date" class="kv-val tabular">-</strong>
+          </div>
+          <div class="kv-row">
+            <span class="kv-key">전체 저장 기록</span>
+            <strong id="portal-count" class="kv-val tabular">-</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-block">
+        <span class="settings-label">사용 안내</span>
+        <ul class="guide-list">
+          <li>크롬·네이버 웨일·마이크로소프트 엣지에서 동일하게 동작합니다.</li>
+          <li>이 확장 프로그램은 <code>activeTab</code> 권한만 사용해 아이콘을 클릭한 현재 탭에서만 실행됩니다.</li>
+          <li>서버에 선택 날짜(<code>ckdate</code>)와 실제 실행일(<code>usedate</code>)이 함께 기록되므로 생활관 규정에 맞게 사용해 주세요.</li>
+        </ul>
+      </div>
+
+      <div class="settings-footer">기숙사 일일체크 도우미 · v3.1.0</div>
+    </section>
+
+    <!-- Collapsible Live Activity Footer -->
+    <footer class="log-footer">
+      <button id="log-toggle-btn" class="log-bar" type="button" aria-expanded="false">
+        <span class="log-bar-left">
+          <span id="log-latest-dot" class="log-dot"></span>
+          <span id="log-latest" class="log-latest">준비됨 · 달력에서 날짜를 선택하세요</span>
+        </span>
+        <span class="log-bar-right">
+          <span class="log-bar-meta">기록 <span id="log-count" class="tabular">0</span></span>
+          <svg class="log-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.25 6.25 8 10l3.75-3.75" />
+          </svg>
+        </span>
+      </button>
+
+      <div id="log-drawer" class="log-drawer hidden">
+        <div class="log-drawer-head">
+          <span>최근 활동</span>
+          <button id="clear-log-btn" class="text-btn" type="button">비우기</button>
+        </div>
+        <div id="log-list" class="log-list">
+          <div class="log-empty">아직 실행한 작업이 없습니다.</div>
+        </div>
+      </div>
+    </footer>
+
+    <div class="app-version tabular" aria-label="버전 3.1.0">3.1.0</div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

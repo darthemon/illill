@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "기숙사 일일체크 도우미",
+  "version": "3.1.0",
+  "description": "기숙사 일일체크 날짜 이동, 체크, 취소 및 기간 일괄 처리를 간편하게 도와주는 크로미움 확장 프로그램",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "기숙사 일일체크 도우미",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  }
+}
